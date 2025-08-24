@@ -1,9 +1,9 @@
 # RAG-chatbot
 A local Retrieval-Augmented Generation (RAG) chatbot that answers questions based on uploaded documents .
 
-# RAG Chatbot
 
-## Description
+
+ Description
 This project is a **Retrieval-Augmented Generation (RAG) Chatbot** that allows users to ask questions about documents (PDFs) and get context-aware answers. 
 It combines a **document retrieval system** with a **language model** to provide precise responses based on the uploaded documents.
 
