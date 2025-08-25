@@ -1,6 +1,4 @@
-# app_cli.py
-
-from rag import ask, ingest_new_file
+from rag_cli import ask, ingest_new_file, create_qa_chain
 import os
 import time
 
@@ -8,10 +6,15 @@ def main():
     print("====================================")
     print("   Welcome to the RAG Chat CLI!     ")
     print("====================================")
-    print("Type your question about the document, 'upload' to add PDFs, or 'exit' to quit.\n")
+    print("Type 'upload' to add a PDF or 'exit' to quit.\n")
+
+    qa_chain = None
 
     while True:
-        user_input = input("Your input: ")
+        if qa_chain:
+            user_input = input("\nEnter your question (or type 'back' to upload another PDF): ")
+        else:
+            user_input = input("\nYour input: ")
 
         if user_input.lower() in ["exit", "quit", "q"]:
             print("\nGoodbye!")
@@ -23,18 +26,24 @@ def main():
                 f = f.strip()
                 if os.path.exists(f) and f.endswith(".pdf"):
                     start_time = time.time()
-                    ingest_new_file(f)
+                    retriever = ingest_new_file(f)
+                    qa_chain = create_qa_chain(retriever)  # only this PDF
                     end_time = time.time()
                     print(f"⏱ Time taken to ingest {os.path.basename(f)}: {round(end_time - start_time,2)} seconds\n")
                 else:
                     print(f"⚠️ File not found or not a PDF: {f}")
 
-        else:
+        elif user_input.lower() == "back":
+            qa_chain = None  # reset to allow new PDF
+
+        elif qa_chain:
             start_time = time.time()
-            ask(user_input)
+            ask(user_input, qa_chain)
             end_time = time.time()
             print(f"\n⏱ Total latency for this query: {round(end_time - start_time,2)} seconds")
-            print("\n" + "="*40 + "\n")
+
+        else:
+            print("⚠️ Please upload a PDF first using 'upload'.")
 
 if __name__ == "__main__":
     main()
