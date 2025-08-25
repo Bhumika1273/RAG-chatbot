@@ -1,9 +1,9 @@
 import os
 import gradio as gr
 import time
-from rag import qa_chain, ingest_new_file  # Ensure these exist in rag.py
+from rag import qa_chain, ingest_new_file 
 
-uploaded_files = []  # Keep track of uploaded PDFs
+uploaded_files = []  # Keeping track of uploaded PDFs
 
 # Function to handle question queries
 def ask_question_ui(query):
@@ -12,7 +12,7 @@ def ask_question_ui(query):
     end_time = time.time()
     latency = round(end_time - start_time, 2)
 
-    # ✅ Answer (big + white text)
+    # Answer
     answer = f"""
     <div style="font-size:24px; font-weight:600; line-height:1.6; color:white; margin-bottom:15px;">
         <b>Answer:</b><br>{result['result']}
@@ -20,7 +20,7 @@ def ask_question_ui(query):
     </div>
     """
 
-    # ✅ Chunks (slightly smaller + white text, no box)
+    # Chunks 
     sources = "<div style='font-size:20px; color:white; line-height:1.5; margin-top:10px;'>"
     sources += "<b>📑 Cited Chunks:</b><br><br>"
     for i, doc in enumerate(result['source_documents']):
@@ -28,7 +28,7 @@ def ask_question_ui(query):
         sources += f"<b>Chunk {i+1}:</b> {doc.page_content}</div>"
     sources += "</div>"
 
-    return answer + sources  # ✅ merged in one output
+    return answer + sources 
 
 # Function to handle PDF upload
 def upload_pdf(files):
@@ -38,12 +38,12 @@ def upload_pdf(files):
         filename = os.path.basename(file.name)
         ingest_new_file(file.name)
         uploaded_files.append(filename)
-        # ✅ Styled green success message
+        
         messages.append( f"<div style='background-color:#d4edda; color:#155724; padding:10px; " f"border-radius:8px; margin-bottom:8px; font-size:18px; font-weight:bold;'>" f"✅ {filename} ingested successfully!" f"</div>" )
     uploaded_list = "<ul style='font-size:18px; color:white; line-height:1.6;'>" + "".join([f"<li>{f}</li>" for f in uploaded_files]) + "</ul>"
     return "".join(messages) + f"<h4 style='font-size:20px; color:white;'>📂 Uploaded PDFs:</h4>{uploaded_list}"
 
-# Build the Gradio interface
+# Gradio interface
 with gr.Blocks(css="""
     /* ✅ Make buttons smaller */
     .gr-button {
@@ -80,7 +80,7 @@ with gr.Blocks(css="""
 
     query_input = gr.Textbox(label="Your Question", placeholder="Type your question here...", lines=2)
     ask_btn = gr.Button("Get Answer")
-    output_display = gr.HTML(label="Answer + Chunks")  # ✅ Single merged output
+    output_display = gr.HTML(label="Answer + Chunks") 
     ask_btn.click(ask_question_ui, inputs=query_input, outputs=output_display)
 
 demo.launch()
