@@ -55,4 +55,4 @@ print("\n=== PDF Ingestion Completed ===")
 
 # Total time
 total_time = round((t7 - t0), 3)
-print(f"Total ingestion time: {total_time} seconds")
+print(f"\nTotal ingestion time: {total_time} seconds")
