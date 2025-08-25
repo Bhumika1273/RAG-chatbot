@@ -59,7 +59,7 @@ def ingest_new_file(file_path):
     print(f"🔹 Split into {len(chunks)} chunks (chunk_size={chunk_size}, overlap={chunk_overlap}) in {round(t2 - t1, 2)} s")
     print(f"⚡ Embeddings added and saved in {round(t3 - t2, 2)} s")
 
-    # Show current vectorstore size
+    # current vectorstore size
     loaded_vs = FAISS.load_local("db", embedding_model, allow_dangerous_deserialization=True)
     print(f"📦 Vectorstore now contains {loaded_vs.index.ntotal} embeddings\n")
 
