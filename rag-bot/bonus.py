@@ -2,15 +2,15 @@ import os
 import time
 import gradio as gr
 from langchain.memory import ConversationBufferMemory
-from rag import qa_chain, ingest_new_file  # from your existing rag.py
+from rag import qa_chain, ingest_new_file
 
-# --- Memory Setup ---
+# Memory Setup
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
-# Track uploaded files (only current session)
+# Tracking uploaded files 
 uploaded_files = []
 
-# --- Model switching ---
+# Model switching 
 AVAILABLE_MODELS = ["mistral", "llama3", "gemma"]
 current_model = "mistral"  # default
 
@@ -21,21 +21,21 @@ def switch_model(model_name):
         return f"✅ Switched to **{model_name}**"
     return f"⚠️ Model {model_name} not available."
 
-# --- Handle Question + Memory + Model ---
+# Handle Question + Memory + Model
 def ask_question_ui(query):
     start_time = time.time()
 
-    # Add memory context
+    # memory context
     history = memory.load_memory_variables({}).get("chat_history", [])
 
-    # Run RAG pipeline
+    # RAG pipeline
     result = qa_chain({"query": query, "history": history, "model": current_model})
     memory.save_context({"input": query}, {"output": result['result']})
 
     end_time = time.time()
     latency = round(end_time - start_time, 2)
 
-    # Format Answer + Chunks (white text, merged)
+    # Formatting Answer + Chunks
     output_html = f"""
     <div style="font-size:24px; font-weight:600; line-height:1.6; color:white; margin-bottom:15px;">
         <b>Answer:</b><br>{result['result']}
@@ -50,7 +50,7 @@ def ask_question_ui(query):
 
     return output_html, format_chat_history(history)
 
-# --- Display chat history ---
+# Displaying chat history
 def format_chat_history(history):
     if not history:
         return "_No chat history yet._"
@@ -60,7 +60,7 @@ def format_chat_history(history):
         formatted += f"<div style='font-size:18px; color:white; margin-bottom:8px;'><b>{role}:</b> {msg.content}</div>"
     return formatted
 
-# --- Handle PDF upload ---
+# Handling PDF upload 
 def upload_pdf(files):
     global uploaded_files
     messages = []
@@ -73,7 +73,7 @@ def upload_pdf(files):
     uploaded_list = "".join([f"<div style='color:white; font-size:18px;'>- {f}</div>" for f in uploaded_files])
     return "".join(messages), f"<b style='color:white; font-size:20px;'>📂 Uploaded PDFs:</b><br>{uploaded_list}"
 
-# --- Gradio Interface ---
+# Gradio Interface
 with gr.Blocks(css="""
     /* Buttons */
     .gr-button {
@@ -126,7 +126,7 @@ with gr.Blocks(css="""
     ask_btn = gr.Button("Get Answer")
     answer_output = gr.HTML(label="Answer + Cited Chunks")
     
-    # Chat history with heading
+    # Chat history
     chat_history_heading = gr.Markdown("<h3 style='color:white;'>💬 Chat History</h3>")
     history_output = gr.HTML()
 
